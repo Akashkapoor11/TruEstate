@@ -1,5 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
-
+const API_BASE_URL =import.meta.env.VITE_API_URL || "https://truestate-4.onrender.com";
 // Fetch paginated and filtered sales data
 export const fetchSales = async ({ page = 1, limit = 50, filters = {} }) => {
   const params = new URLSearchParams({ page, limit });
