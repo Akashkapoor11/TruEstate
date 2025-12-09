@@ -1,4 +1,4 @@
-// frontend/src/App.js (replace your current file)
+// frontend/src/App.js
 import React, { useEffect, useState } from "react";
 import "./styles/main.css";
 
@@ -60,8 +60,12 @@ function App() {
       setData(json.data || []);
       setTotalPages(json.totalPages || 1);
 
-      // use totals coming from backend (these are for ALL matched rows)
-      setTotals(json.totals || { totalUnits: 0, totalAmount: 0, totalDiscount: 0 });
+      setTotals(json.totals || {
+        totalUnits: 0,
+        totalAmount: 0,
+        totalDiscount: 0
+      });
+
     } catch (err) {
       console.error("Fetch Error:", err);
       setData([]);
@@ -70,15 +74,12 @@ function App() {
     }
   };
 
-  // fetch when page or sort change (and also when filters are applied manually via button)
   useEffect(() => {
     fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, sortBy]);
 
   const applyFilters = () => {
     setPage(1);
-    // fetchData will run from effect due to page change, but call now for immediate UX
     setTimeout(fetchData, 0);
   };
 
@@ -105,32 +106,28 @@ function App() {
     setTimeout(fetchData, 0);
   };
 
-  // formatting helpers
-  const formatNumber = (n) => {
-    const v = Number(n || 0);
-    return v.toLocaleString();
-  };
-  const formatCurrency = (n) => {
-    const v = Number(n || 0);
-    return `₹${v.toLocaleString()}`;
-  };
+  const formatNumber = (n) => Number(n || 0).toLocaleString();
+  const formatCurrency = (n) => `₹${Number(n || 0).toLocaleString()}`;
 
   return (
     <div className="dashboard">
-      <h1>Sales Dashboard</h1>
 
-      <div className="search-row">
-        <input
-          type="text"
-          placeholder="Search by Customer Name or Phone"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <button className="btn-primary" onClick={applyFilters}>
-          Search
-        </button>
+      {/* 🔥 NEW HEADER ROW (Title Left + Search Right) */}
+      <div className="header-row">
+        <h1 className="brand-title">Sales Dashboard</h1>
+
+        <div className="search-inline">
+          <input
+            type="text"
+            placeholder="Search by Customer Name or Phone"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <button className="btn-primary" onClick={applyFilters}>Search</button>
+        </div>
       </div>
 
+      {/* FILTER BAR */}
       <div className="filter-bar">
         <select value={status} onChange={(e) => setStatus(e.target.value)}>
           <option value="">All Status</option>
@@ -165,18 +162,8 @@ function App() {
           <option>Female</option>
         </select>
 
-        <input
-          type="number"
-          placeholder="Min Age"
-          value={minAge}
-          onChange={(e) => setMinAge(e.target.value)}
-        />
-        <input
-          type="number"
-          placeholder="Max Age"
-          value={maxAge}
-          onChange={(e) => setMaxAge(e.target.value)}
-        />
+        <input type="number" placeholder="Min Age" value={minAge} onChange={(e) => setMinAge(e.target.value)} />
+        <input type="number" placeholder="Max Age" value={maxAge} onChange={(e) => setMaxAge(e.target.value)} />
 
         <select value={category} onChange={(e) => setCategory(e.target.value)}>
           <option value="">All Categories</option>
@@ -215,8 +202,8 @@ function App() {
         <button className="reset-btn" onClick={resetFilters}>Reset</button>
       </div>
 
-      {/* KPI Cards - use totals from backend (ALL filtered rows) */}
-      <div style={{ display: 'flex', gap: 12, margin: '18px 0' }}>
+      {/* KPIs */}
+      <div style={{ display: "flex", gap: 12, margin: "18px 0" }}>
         <div className="kpi-card">
           <div className="kpi-title">Total units sold</div>
           <div className="kpi-value">{formatNumber(totals.totalUnits)}</div>
@@ -233,6 +220,7 @@ function App() {
         </div>
       </div>
 
+      {/* TABLE */}
       <div className="table-outer">
         <div className="table-container">
           <table className="data-table">
@@ -263,44 +251,47 @@ function App() {
                 <th>Store ID</th>
                 <th>Store</th>
                 <th>Salesperson ID</th>
-                <th>Employee</th>
+                <td>Employee</td>
               </tr>
             </thead>
+
             <tbody>
               {data.length ? (
                 data.map((item) => (
-                  <tr key={(item['Transaction ID'] || '') + '-' + (item._id || '')}>
-                    <td>{item['Transaction ID']}</td>
-                    <td>{item['Date']}</td>
-                    <td>{item['Customer ID']}</td>
-                    <td>{item['Customer Name']}</td>
-                    <td>{item['Phone Number']}</td>
-                    <td>{item['Gender']}</td>
-                    <td>{item['Age']}</td>
-                    <td>{item['Customer Region']}</td>
-                    <td>{item['Customer Type']}</td>
-                    <td>{item['Product ID']}</td>
-                    <td>{item['Product Name']}</td>
-                    <td>{item['Brand']}</td>
-                    <td>{item['Product Category']}</td>
-                    <td>{item['Tags']}</td>
-                    <td>{item['Quantity']}</td>
-                    <td>{item['Price per Unit']}</td>
-                    <td>{item['Discount Percentage']}</td>
-                    <td>{item['Total Amount']}</td>
-                    <td>{item['Final Amount']}</td>
-                    <td>{item['Payment Method']}</td>
-                    <td>{item['Order Status']}</td>
-                    <td>{item['Delivery Type']}</td>
-                    <td>{item['Store ID']}</td>
-                    <td>{item['Store Location']}</td>
-                    <td>{item['Salesperson ID']}</td>
-                    <td>{item['Employee Name']}</td>
+                  <tr key={(item["Transaction ID"] || "") + "-" + (item._id || "")}>
+                    <td>{item["Transaction ID"]}</td>
+                    <td>{item["Date"]}</td>
+                    <td>{item["Customer ID"]}</td>
+                    <td>{item["Customer Name"]}</td>
+                    <td>{item["Phone Number"]}</td>
+                    <td>{item["Gender"]}</td>
+                    <td>{item["Age"]}</td>
+                    <td>{item["Customer Region"]}</td>
+                    <td>{item["Customer Type"]}</td>
+                    <td>{item["Product ID"]}</td>
+                    <td>{item["Product Name"]}</td>
+                    <td>{item["Brand"]}</td>
+                    <td>{item["Product Category"]}</td>
+                    <td>{item["Tags"]}</td>
+                    <td>{item["Quantity"]}</td>
+                    <td>{item["Price per Unit"]}</td>
+                    <td>{item["Discount Percentage"]}</td>
+                    <td>{item["Total Amount"]}</td>
+                    <td>{item["Final Amount"]}</td>
+                    <td>{item["Payment Method"]}</td>
+                    <td>{item["Order Status"]}</td>
+                    <td>{item["Delivery Type"]}</td>
+                    <td>{item["Store ID"]}</td>
+                    <td>{item["Store Location"]}</td>
+                    <td>{item["Salesperson ID"]}</td>
+                    <td>{item["Employee Name"]}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="27" style={{ textAlign: 'center', padding: 20 }}>No records found</td>
+                  <td colSpan="27" style={{ textAlign: "center", padding: 20 }}>
+                    No records found
+                  </td>
                 </tr>
               )}
             </tbody>
@@ -308,10 +299,15 @@ function App() {
         </div>
       </div>
 
+      {/* PAGINATION */}
       <div className="pagination">
-        <button disabled={page === 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>Prev</button>
+        <button disabled={page === 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>
+          Prev
+        </button>
         <span>Page {page} / {totalPages}</span>
-        <button disabled={page === totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>Next</button>
+        <button disabled={page === totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>
+          Next
+        </button>
       </div>
     </div>
   );
