@@ -11,3 +11,9 @@ Folders:
 
 **Important:** Place your large CSV file at `backend/src/data/sales_data.csv` before running the backend. See `backend/src/data/README.md` for expected columns.
 
+## frontend
+https://truestate-21.onrender.com/
+
+## backend
+https://truestate-4.onrender.com/
+
