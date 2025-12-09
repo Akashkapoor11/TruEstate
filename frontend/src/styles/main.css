@@ -1,9 +1,9 @@
-/* Prevent page horizontal scroll — table will handle horizontal scroll */
+/* Prevent page horizontal scroll */
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  overflow-x: hidden; /* KEY: prevents whole page from sliding */
+  overflow-x: hidden;
   font-family: "Segoe UI", system-ui, sans-serif;
   background: #f5f7fb;
   color: #111827;
@@ -13,14 +13,14 @@ html, body {
 .dashboard {
   width: 100%;
   box-sizing: border-box;
-  padding: 28px 24px;
+  padding: 20px 18px;
 }
 
 /* Header */
 h1 {
   text-align: center;
-  margin: 0 0 18px 0;
-  font-size: 32px;
+  margin: 0 0 16px 0;
+  font-size: 26px;   /* ↓ smaller */
   font-weight: 700;
 }
 
@@ -28,115 +28,109 @@ h1 {
 .search-row {
   display: flex;
   justify-content: center;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 10px;
+  margin-bottom: 14px;
 }
 .search-row input {
-  width: 420px;
-  padding: 10px 12px;
-  border-radius: 8px;
+  width: 360px; /* ↓ smaller width */
+  padding: 8px 10px;
+  border-radius: 6px;
   border: 1px solid #e6eefc;
   background: #fff;
-  font-size: 15px;
+  font-size: 14px;  /* ↓ smaller */
 }
-.btn-primary {
-  background: #2563eb;
-  color: #fff;
-  border: none;
-  padding: 10px 14px;
-  border-radius: 8px;
-  cursor: pointer;
-}
+.btn-primary,
 .reset-btn {
-  background: #d1d5db;
-  color: #111;
-  border: none;
-  padding: 10px 14px;
-  border-radius: 8px;
-  cursor: pointer;
+  padding: 8px 12px; /* ↓ smaller */
+  font-size: 14px;
+  border-radius: 6px;
 }
 
 /* Filters */
 .filter-bar {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 8px;       /* ↓ smaller spacing */
   justify-content: center;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 .filter-bar select,
 .filter-bar input {
-  padding: 8px 10px;
-  border-radius: 8px;
+  padding: 6px 8px; /* ↓ smaller */
+  border-radius: 6px;
   border: 1px solid #e6eefc;
-  font-size: 14.5px;
+  font-size: 13px;  /* ↓ smaller */
 }
 
-/* Date group */
-.date-group { display:flex; gap:12px; align-items:center; }
-.date-field { display:flex; flex-direction:column; font-size:13px; }
-.date-field label { margin-bottom:4px; }
+/* DATE GROUP */
+.date-group { 
+  display:flex; 
+  gap:10px; 
+  align-items:center; 
+}
 
-/* table-outer prevents the table from causing body overflow */
+/* TABLE WRAPPER */
 .table-outer {
   width: 100%;
+  padding: 4px;
   box-sizing: border-box;
-  padding: 6px 6px 0 6px;
 }
 
-/* This is the only element that gets a horizontal scrollbar */
+/* TABLE CONTAINER */
 .table-container {
   width: 100%;
-  overflow-x: auto;   /* KEY: horizontal scroll only here */
+  overflow-x: auto;
   overflow-y: auto;
   background: #ffffff;
-  border-radius: 8px;
-  padding: 8px;
-  box-shadow: 0 1px 3px rgba(14,30,50,0.06);
-  max-height: 640px;  /* keep body scroll inside */
+  border-radius: 6px;
+  padding: 6px;
+  box-shadow: 0 1px 2px rgba(14,30,50,0.06);
+  max-height: 600px;
 }
 
-/* Make the table expand beyond viewport so horizontal scroll works */
+/* ↓↓↓ THE IMPORTANT PART ↓↓↓ */
+/* SHRINK TABLE TO FIT ON ONE SCREEN */
 .data-table {
-  width: max-content;  /* table sizing dictated by content — allows horizontal scroll */
-  min-width: 1500px;   /* ensure it's wider than small screens — tweak as needed */
+  width: max-content;
+  min-width: 1050px;  /* ↓ drastically reduce from 1500px */
   border-collapse: collapse;
-  font-size: 14.8px;
+  font-size: 12px;   /* ↓ smaller text */
 }
 
-/* header sticky at top of table-container */
+/* HEADER */
 .data-table thead th {
+  padding: 6px 8px;  /* ↓ smaller padding */
+  font-size: 12px;
+  background: #e8f0ff;
+  white-space: nowrap;
   position: sticky;
   top: 0;
-  background: #e8f0ff;
-  padding: 10px 14px;
-  font-weight: 600;
   z-index: 5;
-  text-align: left;
-  white-space: nowrap;
 }
 
-/* rows */
+/* BODY CELLS */
 .data-table td {
-  padding: 10px 14px;
+  padding: 6px 8px;  /* ↓ smaller */
   white-space: nowrap;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid #eef2f7;
+  font-size: 12px;
 }
 
-/* zebra */
-.data-table tbody tr:nth-child(even) { background: #fbfdff; }
-.data-table tbody tr:hover { background: #f3f8ff; }
+/* Zebra */
+.data-table tbody tr:nth-child(even) { background: #fafcff; }
+.data-table tbody tr:hover { background: #f1f6ff; }
 
-/* pagination */
+/* Pagination */
 .pagination {
   display:flex;
   justify-content:center;
-  gap:12px;
-  margin-top:16px;
+  gap:10px;
+  margin-top:12px;
 }
 .pagination button {
-  padding:8px 12px;
-  border-radius:8px;
+  padding:6px 10px;
+  font-size: 13px;
+  border-radius:6px;
   border: 1px solid #e6eefc;
   background:#fff;
   cursor:pointer;
