@@ -66,7 +66,7 @@ Backend root: `/backend`
 
 ## 3.1 Folder Structure
 
-backend/
+```backend/
 ├── src/
 │ ├── controllers/
 │ │ └── salesController.js
@@ -84,6 +84,7 @@ backend/
 │ └── normalizeFields.js
 ├── package.json
 └── .env
+```
 
 markdown
 Copy code
@@ -228,7 +229,7 @@ Displays page number and total pages
 5. Data Flow Diagram (End-to-end)
 pgsql
 Copy code
- User Input (Search / Filters / Sort / Page)
+ ```User Input (Search / Filters / Sort / Page)
                     |
                     v
           React State Updates
@@ -252,6 +253,7 @@ Copy code
                     |
                     v
          React Updates UI Components
+```
 6. Database Design
 MongoDB Collection: sales
 Sample fields
