@@ -28,8 +28,7 @@ All functionality is fully server-driven for scalability.
 
 # 2. High-Level Architecture Diagram
 
-sql
-Copy code
+
                +--------------------+
                |   Frontend (Vite)  |
                | React Components   |
@@ -49,8 +48,7 @@ v
 | Streaming Data Output |
 +-----------------------+
 
-yaml
-Copy code
+
 
 ---
 
@@ -141,7 +139,7 @@ Copy code
 - `pagination` → `.skip()` + `.limit()`  
 4. Database executes query  
 5. Backend returns:
-```json
+``json
 {
   "data": [...],
   "totalPages": 60900,
