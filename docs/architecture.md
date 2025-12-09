@@ -141,7 +141,7 @@ Copy code
 - `pagination` → `.skip()` + `.limit()`  
 4. Database executes query  
 5. Backend returns:
-```json
+  json-
 {
   "data": [...],
   "totalPages": 60900,
