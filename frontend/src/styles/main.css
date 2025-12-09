@@ -1,165 +1,143 @@
-/* Prevent page horizontal scroll */
+/* Prevent page horizontal scroll — table will handle horizontal scroll */
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  overflow-x: hidden;
+  overflow-x: hidden; /* KEY: prevents whole page from sliding */
   font-family: "Segoe UI", system-ui, sans-serif;
   background: #f5f7fb;
   color: #111827;
 }
 
-/* Dashboard wrapper - make it slightly tighter vertically */
+/* Dashboard wrapper */
 .dashboard {
   width: 100%;
   box-sizing: border-box;
-  padding: 12px 14px; /* moved everything a little up */
+  padding: 28px 24px;
 }
 
-/* Header row: title left, search right */
-.header-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 10px;
-}
-
-/* Title aligned left */
-.brand-title {
-  margin: 0;
-  font-size: 22px;   /* smaller so fits top-left */
+/* Header */
+h1 {
+  text-align: center;
+  margin: 0 0 18px 0;
+  font-size: 32px;
   font-weight: 700;
-  color: #0f172a;
-  flex: 0 0 auto;
 }
 
-/* Search inline on top-right */
-.search-inline {
+/* Search row */
+.search-row {
   display: flex;
-  gap: 8px;
-  align-items: center;
-  justify-content:flex-end;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 16px;
 }
-.search-inline input {
-  width: 420px;      /* adjust as needed */
-  max-width: 38vw;
-  padding: 8px 10px;
+.search-row input {
+  width: 420px;
+  padding: 10px 12px;
   border-radius: 8px;
   border: 1px solid #e6eefc;
   background: #fff;
-  font-size: 14px;
+  font-size: 15px;
 }
-.search-inline .btn-primary {
-  padding: 8px 12px;
-  font-size: 14px;
+.btn-primary {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  padding: 10px 14px;
   border-radius: 8px;
+  cursor: pointer;
+}
+.reset-btn {
+  background: #d1d5db;
+  color: #111;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
-/* Filters (compact) */
+/* Filters */
 .filter-bar {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  justify-content: flex-start;
-  margin: 8px 0 10px 0;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 16px;
 }
-.compact-filter select,
-.compact-filter input {
-  padding: 6px 8px;
-  border-radius: 6px;
+.filter-bar select,
+.filter-bar input {
+  padding: 8px 10px;
+  border-radius: 8px;
   border: 1px solid #e6eefc;
-  font-size: 13px;
+  font-size: 14.5px;
 }
 
 /* Date group */
-.date-group { display:flex; gap:8px; align-items:center; }
-.compact-date input { padding:6px 8px; font-size:13px; }
+.date-group { display:flex; gap:12px; align-items:center; }
+.date-field { display:flex; flex-direction:column; font-size:13px; }
+.date-field label { margin-bottom:4px; }
 
-/* KPI row */
-.kpi-row {
-  display:flex;
-  gap:12px;
-  margin: 6px 0 10px 0;
-  align-items: center;
-}
-.kpi-card {
-  background: transparent;
-  padding: 4px 8px;
-  border-radius: 6px;
-}
-.kpi-title { font-size: 12px; color: #374151; }
-.kpi-value { font-weight: 700; font-size: 14px; margin-top: 2px; }
-
-/* Table wrapper */
+/* table-outer prevents the table from causing body overflow */
 .table-outer {
   width: 100%;
   box-sizing: border-box;
-  padding: 4px;
+  padding: 6px 6px 0 6px;
 }
 
-/* Table container */
+/* This is the only element that gets a horizontal scrollbar */
 .table-container {
   width: 100%;
-  overflow-x: auto;
+  overflow-x: auto;   /* KEY: horizontal scroll only here */
   overflow-y: auto;
   background: #ffffff;
-  border-radius: 6px;
-  padding: 6px;
-  box-shadow: 0 1px 2px rgba(14,30,50,0.06);
-  max-height: 580px;  /* kept compact to bring it up */
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: 0 1px 3px rgba(14,30,50,0.06);
+  max-height: 640px;  /* keep body scroll inside */
 }
 
-/* Table sizing and compact cells */
+/* Make the table expand beyond viewport so horizontal scroll works */
 .data-table {
-  width: max-content;
-  min-width: 1100px;  /* compact min width; tweak if columns overflow */
+  width: max-content;  /* table sizing dictated by content — allows horizontal scroll */
+  min-width: 1500px;   /* ensure it's wider than small screens — tweak as needed */
   border-collapse: collapse;
-  font-size: 12px;
+  font-size: 14.8px;
 }
 
-/* Sticky header */
+/* header sticky at top of table-container */
 .data-table thead th {
   position: sticky;
   top: 0;
   background: #e8f0ff;
-  padding: 6px 8px;
+  padding: 10px 14px;
   font-weight: 600;
   z-index: 5;
   text-align: left;
   white-space: nowrap;
-  font-size: 12px;
 }
 
-/* Rows and cells */
+/* rows */
 .data-table td {
-  padding: 6px 8px;
+  padding: 10px 14px;
   white-space: nowrap;
-  border-bottom: 1px solid #eef2f7;
-  font-size: 12px;
+  border-bottom: 1px solid #f1f5f9;
 }
+
+/* zebra */
 .data-table tbody tr:nth-child(even) { background: #fbfdff; }
 .data-table tbody tr:hover { background: #f3f8ff; }
 
-/* Pagination */
+/* pagination */
 .pagination {
   display:flex;
   justify-content:center;
-  gap:10px;
-  margin-top:10px;
+  gap:12px;
+  margin-top:16px;
 }
 .pagination button {
-  padding:6px 10px;
-  border-radius:6px;
+  padding:8px 12px;
+  border-radius:8px;
   border: 1px solid #e6eefc;
   background:#fff;
   cursor:pointer;
-  font-size: 13px;
-}
-
-/* Responsive fallback: if screen very narrow, allow search to go below */
-@media (max-width: 900px) {
-  .header-row { flex-direction: column; align-items: stretch; gap: 8px; }
-  .search-inline { justify-content: stretch; }
-  .search-inline input { width: 100%; max-width: none; }
 }
