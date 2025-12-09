@@ -1,31 +1,40 @@
-// frontend/src/services/api.js
+// 👇 ALWAYS load API URL from environment
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-const rawBase = (import.meta.env.VITE_API_URL || "http://localhost:3001").trim();
-// remove trailing slash if present
-const API_BASE_URL = rawBase.replace(/\/+$/, "");
+console.log("🌍 Loaded API BASE URL:", API_BASE_URL);
 
-console.log("FRONTEND -> API_BASE:", API_BASE_URL);
+// Safety check: prevent localhost from being used in production
+if (!API_BASE_URL || API_BASE_URL.includes("localhost")) {
+  console.warn("⚠️ WARNING: Invalid API URL. Backend will not load.");
+}
 
-export const fetchSales = async ({ page = 1, limit = 50, filters = {} } = {}) => {
+// ----------------------
+// Fetch sales data
+// ----------------------
+export const fetchSales = async ({ 
+  page = 1, 
+  limit = 50, 
+  filters = {} 
+}) => {
+
   const params = new URLSearchParams({ page, limit });
 
-  Object.entries(filters).forEach(([k, v]) => {
-    if (v !== "" && v !== null && v !== undefined) params.append(k, v);
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value !== undefined && value !== "") {
+      params.append(key, value);
+    }
   });
 
   const url = `${API_BASE_URL}/api/sales?${params.toString()}`;
-  console.log("Fetching sales:", url);
 
-  try {
-    const res = await fetch(url);
-    if (!res.ok) {
-      const txt = await res.text().catch(() => "");
-      console.error("Fetch failed", res.status, res.statusText, txt);
-      throw new Error(`Failed to fetch sales: ${res.status}`);
-    }
-    return await res.json();
-  } catch (err) {
-    console.error("Fetch error:", err);
-    throw err;
+  console.log("📡 Fetching from:", url);
+
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    console.error("❌ API fetch failed:", response.status, response.statusText);
+    throw new Error("Failed to fetch sales data");
   }
+
+  return response.json();
 };
