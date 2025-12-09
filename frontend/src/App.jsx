@@ -1,3 +1,4 @@
+// frontend/src/App.js (replace your current file)
 import React, { useEffect, useState } from "react";
 import "./styles/main.css";
 
@@ -17,8 +18,10 @@ function App() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
-  // sorting & pagination
+  // sorting key must match backend keys
   const [sortBy, setSortBy] = useState("date_desc");
+
+  // pagination
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -26,7 +29,7 @@ function App() {
   const [totals, setTotals] = useState({
     totalUnits: 0,
     totalAmount: 0,
-    totalDiscount: 0,
+    totalDiscount: 0
   });
 
   const PAGE_SIZE = 10;
@@ -46,18 +49,18 @@ function App() {
       endDate,
       sortBy,
       page,
-      pageSize: PAGE_SIZE,
+      pageSize: PAGE_SIZE
     });
 
     try {
-      // NOTE: keep this to your production API env var; for testing you may use localhost
-      const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001";
-      const res = await fetch(`${API_BASE}/api/sales?${params.toString()}`);
+      const res = await fetch(`http://localhost:3001/api/sales?${params.toString()}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = await res.json();
 
       setData(json.data || []);
       setTotalPages(json.totalPages || 1);
+
+      // use totals coming from backend (these are for ALL matched rows)
       setTotals(json.totals || { totalUnits: 0, totalAmount: 0, totalDiscount: 0 });
     } catch (err) {
       console.error("Fetch Error:", err);
@@ -67,13 +70,15 @@ function App() {
     }
   };
 
+  // fetch when page or sort change (and also when filters are applied manually via button)
   useEffect(() => {
     fetchData();
-    // eslint-disable-next-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, sortBy]);
 
   const applyFilters = () => {
     setPage(1);
+    // fetchData will run from effect due to page change, but call now for immediate UX
     setTimeout(fetchData, 0);
   };
 
@@ -94,29 +99,39 @@ function App() {
     setTimeout(fetchData, 0);
   };
 
-  // small format helpers
-  const fmtN = (n) => Number(n || 0).toLocaleString();
-  const fmtC = (n) => `₹${Number(n || 0).toLocaleString()}`;
+  const onSortChange = (val) => {
+    setSortBy(val);
+    setPage(1);
+    setTimeout(fetchData, 0);
+  };
+
+  // formatting helpers
+  const formatNumber = (n) => {
+    const v = Number(n || 0);
+    return v.toLocaleString();
+  };
+  const formatCurrency = (n) => {
+    const v = Number(n || 0);
+    return `₹${v.toLocaleString()}`;
+  };
 
   return (
-    <div className="dashboard compact">
-      {/* header row: title left, search right */}
-      <div className="header-row">
-        <h1 className="brand-title">Sales Management System</h1>
+    <div className="dashboard">
+      <h1>Sales Dashboard</h1>
 
-        <div className="search-inline">
-          <input
-            type="text"
-            placeholder="Search by Customer Name or Phone"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <button className="btn-primary" onClick={applyFilters}>Search</button>
-        </div>
+      <div className="search-row">
+        <input
+          type="text"
+          placeholder="Search by Customer Name or Phone"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <button className="btn-primary" onClick={applyFilters}>
+          Search
+        </button>
       </div>
 
-      {/* filter bar (slightly compact) */}
-      <div className="filter-bar compact-filter">
+      <div className="filter-bar">
         <select value={status} onChange={(e) => setStatus(e.target.value)}>
           <option value="">All Status</option>
           <option>Completed</option>
@@ -132,6 +147,7 @@ function App() {
           <option>Kolkata</option>
           <option>Pune</option>
           <option>Bengaluru</option>
+          <option>Jaipur</option>
         </select>
 
         <select value={region} onChange={(e) => setRegion(e.target.value)}>
@@ -140,6 +156,7 @@ function App() {
           <option>South</option>
           <option>East</option>
           <option>West</option>
+          <option>Central</option>
         </select>
 
         <select value={gender} onChange={(e) => setGender(e.target.value)}>
@@ -148,8 +165,18 @@ function App() {
           <option>Female</option>
         </select>
 
-        <input type="number" placeholder="Min" value={minAge} onChange={(e) => setMinAge(e.target.value)} />
-        <input type="number" placeholder="Max" value={maxAge} onChange={(e) => setMaxAge(e.target.value)} />
+        <input
+          type="number"
+          placeholder="Min Age"
+          value={minAge}
+          onChange={(e) => setMinAge(e.target.value)}
+        />
+        <input
+          type="number"
+          placeholder="Max Age"
+          value={maxAge}
+          onChange={(e) => setMaxAge(e.target.value)}
+        />
 
         <select value={category} onChange={(e) => setCategory(e.target.value)}>
           <option value="">All Categories</option>
@@ -165,41 +192,47 @@ function App() {
           <option>Debit Card</option>
           <option>Credit Card</option>
           <option>Wallet</option>
+          <option>Net Banking</option>
         </select>
 
-        <div className="date-group compact-date">
+        <div className="date-group">
+          <label>Start Date</label>
           <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+          <label>End Date</label>
           <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
         </div>
 
-        <select value={sortBy} onChange={(e) => { setSortBy(e.target.value); setPage(1); }}>
+        <select value={sortBy} onChange={(e) => onSortChange(e.target.value)}>
           <option value="date_desc">Date (Newest → Oldest)</option>
           <option value="date_asc">Date (Oldest → Newest)</option>
-          <option value="name_asc">Name A→Z</option>
-          <option value="name_desc">Name Z→A</option>
+          <option value="name_asc">Customer Name (A → Z)</option>
+          <option value="name_desc">Customer Name (Z → A)</option>
+          <option value="qty_desc">Quantity (High → Low)</option>
+          <option value="qty_asc">Quantity (Low → High)</option>
         </select>
 
-        <button className="btn-primary" onClick={applyFilters}>Apply</button>
+        <button className="btn-primary" onClick={applyFilters}>Apply Filters</button>
         <button className="reset-btn" onClick={resetFilters}>Reset</button>
       </div>
 
-      {/* KPI */}
-      <div className="kpi-row">
+      {/* KPI Cards - use totals from backend (ALL filtered rows) */}
+      <div style={{ display: 'flex', gap: 12, margin: '18px 0' }}>
         <div className="kpi-card">
           <div className="kpi-title">Total units sold</div>
-          <div className="kpi-value">{fmtN(totals.totalUnits)}</div>
+          <div className="kpi-value">{formatNumber(totals.totalUnits)}</div>
         </div>
+
         <div className="kpi-card">
           <div className="kpi-title">Total Amount</div>
-          <div className="kpi-value">{fmtC(totals.totalAmount)}</div>
+          <div className="kpi-value">{formatCurrency(totals.totalAmount)}</div>
         </div>
+
         <div className="kpi-card">
           <div className="kpi-title">Total Discount</div>
-          <div className="kpi-value">{fmtC(totals.totalDiscount)}</div>
+          <div className="kpi-value">{formatCurrency(totals.totalDiscount)}</div>
         </div>
       </div>
 
-      {/* table */}
       <div className="table-outer">
         <div className="table-container">
           <table className="data-table">
@@ -236,40 +269,38 @@ function App() {
             <tbody>
               {data.length ? (
                 data.map((item) => (
-                  <tr key={(item["Transaction ID"] || "") + "-" + (item._id || "")}>
-                    <td>{item["Transaction ID"]}</td>
-                    <td>{item["Date"]}</td>
-                    <td>{item["Customer ID"]}</td>
-                    <td>{item["Customer Name"]}</td>
-                    <td>{item["Phone Number"]}</td>
-                    <td>{item["Gender"]}</td>
-                    <td>{item["Age"]}</td>
-                    <td>{item["Customer Region"]}</td>
-                    <td>{item["Customer Type"]}</td>
-                    <td>{item["Product ID"]}</td>
-                    <td>{item["Product Name"]}</td>
-                    <td>{item["Brand"]}</td>
-                    <td>{item["Product Category"]}</td>
-                    <td>{item["Tags"]}</td>
-                    <td>{item["Quantity"]}</td>
-                    <td>{item["Price per Unit"]}</td>
-                    <td>{item["Discount Percentage"]}</td>
-                    <td>{item["Total Amount"]}</td>
-                    <td>{item["Final Amount"]}</td>
-                    <td>{item["Payment Method"]}</td>
-                    <td>{item["Order Status"]}</td>
-                    <td>{item["Delivery Type"]}</td>
-                    <td>{item["Store ID"]}</td>
-                    <td>{item["Store Location"]}</td>
-                    <td>{item["Salesperson ID"]}</td>
-                    <td>{item["Employee Name"]}</td>
+                  <tr key={(item['Transaction ID'] || '') + '-' + (item._id || '')}>
+                    <td>{item['Transaction ID']}</td>
+                    <td>{item['Date']}</td>
+                    <td>{item['Customer ID']}</td>
+                    <td>{item['Customer Name']}</td>
+                    <td>{item['Phone Number']}</td>
+                    <td>{item['Gender']}</td>
+                    <td>{item['Age']}</td>
+                    <td>{item['Customer Region']}</td>
+                    <td>{item['Customer Type']}</td>
+                    <td>{item['Product ID']}</td>
+                    <td>{item['Product Name']}</td>
+                    <td>{item['Brand']}</td>
+                    <td>{item['Product Category']}</td>
+                    <td>{item['Tags']}</td>
+                    <td>{item['Quantity']}</td>
+                    <td>{item['Price per Unit']}</td>
+                    <td>{item['Discount Percentage']}</td>
+                    <td>{item['Total Amount']}</td>
+                    <td>{item['Final Amount']}</td>
+                    <td>{item['Payment Method']}</td>
+                    <td>{item['Order Status']}</td>
+                    <td>{item['Delivery Type']}</td>
+                    <td>{item['Store ID']}</td>
+                    <td>{item['Store Location']}</td>
+                    <td>{item['Salesperson ID']}</td>
+                    <td>{item['Employee Name']}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="27" style={{ textAlign: "center", padding: 20 }}>
-                    No records found
-                  </td>
+                  <td colSpan="27" style={{ textAlign: 'center', padding: 20 }}>No records found</td>
                 </tr>
               )}
             </tbody>
@@ -277,15 +308,10 @@ function App() {
         </div>
       </div>
 
-      {/* pagination */}
       <div className="pagination">
-        <button disabled={page === 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>
-          Prev
-        </button>
+        <button disabled={page === 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>Prev</button>
         <span>Page {page} / {totalPages}</span>
-        <button disabled={page === totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>
-          Next
-        </button>
+        <button disabled={page === totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>Next</button>
       </div>
     </div>
   );
