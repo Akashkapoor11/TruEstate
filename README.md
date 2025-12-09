@@ -132,32 +132,29 @@ Copy code
 ## 🏗 Setup Instructions
 
 ### **Backend**
-sh
+
 cd backend
 npm install
 npm start
 Environment variables required:
 
-ini
+
 Copy code
 MONGODB_URI=your_mongo_connection_string
 PORT=3001
 Frontend
-sh
+
 Copy code
 cd frontend
 npm install
 npm run dev
 For production build:
 
-sh
 Copy code
 npm run build
 npm run preview
 Environment variable:
 
-ini
-Copy code
 VITE_API_URL=https://truestate-4.onrender.com
 ## Architecture Document
 Located at:
