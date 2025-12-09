@@ -2,6 +2,18 @@
 import React, { useEffect, useState } from "react";
 import "./styles/main.css";
 
+// Load API base URL from env (set VITE_API_URL in Render/Vercel).
+// If missing, fallback to the Render backend you already have.
+const RAW_API_BASE = import.meta.env.VITE_API_URL || "https://truestate-4.onrender.com";
+const API_BASE_URL = RAW_API_BASE.replace(/\/+$/, ""); // remove trailing slash(s)
+
+console.log("🌍 API_BASE_URL =", API_BASE_URL);
+if (!API_BASE_URL || API_BASE_URL.includes("localhost")) {
+  console.warn(
+    "⚠️ API_BASE_URL is not set or points to localhost. Set VITE_API_URL to your Render backend URL."
+  );
+}
+
 function App() {
   const [data, setData] = useState([]);
 
@@ -52,20 +64,20 @@ function App() {
       pageSize: PAGE_SIZE
     });
 
+    // Build URL safely
+    const url = new URL("/api/sales", API_BASE_URL);
+    url.search = params.toString();
+
+    console.log("📡 Fetching:", url.toString());
+
     try {
-      const res = await fetch(`http://localhost:3001/api/sales?${params.toString()}`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const res = await fetch(url.toString());
+      if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
       const json = await res.json();
 
       setData(json.data || []);
       setTotalPages(json.totalPages || 1);
-
-      setTotals(json.totals || {
-        totalUnits: 0,
-        totalAmount: 0,
-        totalDiscount: 0
-      });
-
+      setTotals(json.totals || { totalUnits: 0, totalAmount: 0, totalDiscount: 0 });
     } catch (err) {
       console.error("Fetch Error:", err);
       setData([]);
@@ -76,7 +88,7 @@ function App() {
 
   useEffect(() => {
     fetchData();
-  }, [page, sortBy]);
+  }, [page, sortBy]); // eslint-disable-line
 
   const applyFilters = () => {
     setPage(1);
@@ -111,11 +123,8 @@ function App() {
 
   return (
     <div className="dashboard">
-
-      {/* 🔥 NEW HEADER ROW (Title Left + Search Right) */}
       <div className="header-row">
-        <h1 className="brand-title">Sales Dashboard</h1>
-
+        <h1 className="brand-title">Sales Management System</h1>
         <div className="search-inline">
           <input
             type="text"
@@ -123,11 +132,12 @@ function App() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-          <button className="btn-primary" onClick={applyFilters}>Search</button>
+          <button className="btn-primary" onClick={applyFilters}>
+            Search
+          </button>
         </div>
       </div>
 
-      {/* FILTER BAR */}
       <div className="filter-bar">
         <select value={status} onChange={(e) => setStatus(e.target.value)}>
           <option value="">All Status</option>
@@ -198,11 +208,12 @@ function App() {
           <option value="qty_asc">Quantity (Low → High)</option>
         </select>
 
-        <button className="btn-primary" onClick={applyFilters}>Apply Filters</button>
+        <button className="btn-primary" onClick={applyFilters}>
+          Apply Filters
+        </button>
         <button className="reset-btn" onClick={resetFilters}>Reset</button>
       </div>
 
-      {/* KPIs */}
       <div style={{ display: "flex", gap: 12, margin: "18px 0" }}>
         <div className="kpi-card">
           <div className="kpi-title">Total units sold</div>
@@ -220,7 +231,6 @@ function App() {
         </div>
       </div>
 
-      {/* TABLE */}
       <div className="table-outer">
         <div className="table-container">
           <table className="data-table">
@@ -251,10 +261,9 @@ function App() {
                 <th>Store ID</th>
                 <th>Store</th>
                 <th>Salesperson ID</th>
-                <td>Employee</td>
+                <th>Employee</th>
               </tr>
             </thead>
-
             <tbody>
               {data.length ? (
                 data.map((item) => (
@@ -299,15 +308,10 @@ function App() {
         </div>
       </div>
 
-      {/* PAGINATION */}
       <div className="pagination">
-        <button disabled={page === 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>
-          Prev
-        </button>
+        <button disabled={page === 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>Prev</button>
         <span>Page {page} / {totalPages}</span>
-        <button disabled={page === totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>
-          Next
-        </button>
+        <button disabled={page === totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>Next</button>
       </div>
     </div>
   );
