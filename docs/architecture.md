@@ -167,7 +167,7 @@ Dashboard layout optimized to fit on one page
 4.1 Folder Structure
 css
 Copy code
-frontend/
+```frontend/
 ├── src/
 │   ├── components/
 │   │   ├── FiltersPanel.jsx
@@ -183,6 +183,7 @@ frontend/
 │   └── main.jsx
 ├── package.json
 └── vite.config.js
+```
 4.2 Component Responsibilities
 App.jsx
 Main dashboard layout
