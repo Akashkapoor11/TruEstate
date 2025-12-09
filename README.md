@@ -132,7 +132,7 @@ Copy code
 ## 🏗 Setup Instructions
 
 ### **Backend**
-```sh
+sh
 cd backend
 npm install
 npm start
