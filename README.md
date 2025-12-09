@@ -97,7 +97,7 @@ Mechanism:
 ---
 
 ## 📦 Project Structure
-
+```
 root/
 ├── backend/
 │ ├── src/
@@ -123,6 +123,7 @@ root/
 │ └── architecture.md
 │
 └── README.md
+```
 
 yaml
 Copy code
