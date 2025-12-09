@@ -28,7 +28,7 @@ All functionality is fully server-driven for scalability.
 
 # 2. High-Level Architecture Diagram
 
-
+```
                +--------------------+
                |   Frontend (Vite)  |
                | React Components   |
@@ -49,7 +49,7 @@ v
 +-----------------------+
 
 
-
+```
 ---
 
 # 3. Backend Architecture
