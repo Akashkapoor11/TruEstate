@@ -1,11 +1,10 @@
-// frontend/src/App.js (replace your current file)
+// frontend/src/App.jsx
 import React, { useEffect, useState } from "react";
 import "./styles/main.css";
+import { fetchSales } from "./services/api";
 
 function App() {
   const [data, setData] = useState([]);
-
-  // FILTER STATES
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
   const [store, setStore] = useState("");
@@ -17,15 +16,11 @@ function App() {
   const [payment, setPayment] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-
-  // sorting key must match backend keys
   const [sortBy, setSortBy] = useState("date_desc");
 
-  // pagination
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  // totals returned by backend
   const [totals, setTotals] = useState({
     totalUnits: 0,
     totalAmount: 0,
@@ -34,52 +29,46 @@ function App() {
 
   const PAGE_SIZE = 10;
 
-  const fetchData = async () => {
-    const params = new URLSearchParams({
-      search,
-      status,
-      store,
-      region,
-      gender,
-      minAge,
-      maxAge,
-      category,
-      payment,
-      startDate,
-      endDate,
-      sortBy,
-      page,
-      pageSize: PAGE_SIZE
-    });
-
+  const loadData = async () => {
     try {
-      const res = await fetch(`http://localhost:3001/api/sales?${params.toString()}`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const json = await res.json();
+      const json = await fetchSales({
+        page,
+        limit: PAGE_SIZE,
+        filters: {
+          search,
+          status,
+          store,
+          region,
+          gender,
+          minAge,
+          maxAge,
+          category,
+          payment,
+          startDate,
+          endDate,
+          sortBy
+        }
+      });
 
       setData(json.data || []);
       setTotalPages(json.totalPages || 1);
-
-      // use totals coming from backend (these are for ALL matched rows)
       setTotals(json.totals || { totalUnits: 0, totalAmount: 0, totalDiscount: 0 });
+
     } catch (err) {
-      console.error("Fetch Error:", err);
+      console.error("❌ Fetch Error:", err);
       setData([]);
       setTotalPages(1);
       setTotals({ totalUnits: 0, totalAmount: 0, totalDiscount: 0 });
     }
   };
 
-  // fetch when page or sort change (and also when filters are applied manually via button)
   useEffect(() => {
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    loadData();
   }, [page, sortBy]);
 
   const applyFilters = () => {
     setPage(1);
-    // fetchData will run from effect due to page change, but call now for immediate UX
-    setTimeout(fetchData, 0);
+    loadData();
   };
 
   const resetFilters = () => {
@@ -96,29 +85,14 @@ function App() {
     setEndDate("");
     setSortBy("date_desc");
     setPage(1);
-    setTimeout(fetchData, 0);
-  };
-
-  const onSortChange = (val) => {
-    setSortBy(val);
-    setPage(1);
-    setTimeout(fetchData, 0);
-  };
-
-  // formatting helpers
-  const formatNumber = (n) => {
-    const v = Number(n || 0);
-    return v.toLocaleString();
-  };
-  const formatCurrency = (n) => {
-    const v = Number(n || 0);
-    return `₹${v.toLocaleString()}`;
+    loadData();
   };
 
   return (
     <div className="dashboard">
       <h1>Sales Management System</h1>
 
+      {/* SEARCH */}
       <div className="search-row">
         <input
           type="text"
@@ -126,11 +100,10 @@ function App() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <button className="btn-primary" onClick={applyFilters}>
-          Search
-        </button>
+        <button className="btn-primary" onClick={applyFilters}>Search</button>
       </div>
 
+      {/* FILTERS */}
       <div className="filter-bar">
         <select value={status} onChange={(e) => setStatus(e.target.value)}>
           <option value="">All Status</option>
@@ -165,18 +138,8 @@ function App() {
           <option>Female</option>
         </select>
 
-        <input
-          type="number"
-          placeholder="Min Age"
-          value={minAge}
-          onChange={(e) => setMinAge(e.target.value)}
-        />
-        <input
-          type="number"
-          placeholder="Max Age"
-          value={maxAge}
-          onChange={(e) => setMaxAge(e.target.value)}
-        />
+        <input type="number" placeholder="Min Age" value={minAge} onChange={(e) => setMinAge(e.target.value)} />
+        <input type="number" placeholder="Max Age" value={maxAge} onChange={(e) => setMaxAge(e.target.value)} />
 
         <select value={category} onChange={(e) => setCategory(e.target.value)}>
           <option value="">All Categories</option>
@@ -202,7 +165,7 @@ function App() {
           <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
         </div>
 
-        <select value={sortBy} onChange={(e) => onSortChange(e.target.value)}>
+        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
           <option value="date_desc">Date (Newest → Oldest)</option>
           <option value="date_asc">Date (Oldest → Newest)</option>
           <option value="name_asc">Customer Name (A → Z)</option>
@@ -215,24 +178,25 @@ function App() {
         <button className="reset-btn" onClick={resetFilters}>Reset</button>
       </div>
 
-      {/* KPI Cards - use totals from backend (ALL filtered rows) */}
-      <div style={{ display: 'flex', gap: 12, margin: '18px 0' }}>
+      {/* KPI Cards */}
+      <div style={{ display: "flex", gap: 12, margin: "18px 0" }}>
         <div className="kpi-card">
           <div className="kpi-title">Total units sold</div>
-          <div className="kpi-value">{formatNumber(totals.totalUnits)}</div>
+          <div className="kpi-value">{totals.totalUnits}</div>
         </div>
 
         <div className="kpi-card">
           <div className="kpi-title">Total Amount</div>
-          <div className="kpi-value">{formatCurrency(totals.totalAmount)}</div>
+          <div className="kpi-value">₹{totals.totalAmount}</div>
         </div>
 
         <div className="kpi-card">
           <div className="kpi-title">Total Discount</div>
-          <div className="kpi-value">{formatCurrency(totals.totalDiscount)}</div>
+          <div className="kpi-value">₹{totals.totalDiscount}</div>
         </div>
       </div>
 
+      {/* TABLE */}
       <div className="table-outer">
         <div className="table-container">
           <table className="data-table">
@@ -268,39 +232,39 @@ function App() {
             </thead>
             <tbody>
               {data.length ? (
-                data.map((item) => (
-                  <tr key={(item['Transaction ID'] || '') + '-' + (item._id || '')}>
-                    <td>{item['Transaction ID']}</td>
-                    <td>{item['Date']}</td>
-                    <td>{item['Customer ID']}</td>
-                    <td>{item['Customer Name']}</td>
-                    <td>{item['Phone Number']}</td>
-                    <td>{item['Gender']}</td>
-                    <td>{item['Age']}</td>
-                    <td>{item['Customer Region']}</td>
-                    <td>{item['Customer Type']}</td>
-                    <td>{item['Product ID']}</td>
-                    <td>{item['Product Name']}</td>
-                    <td>{item['Brand']}</td>
-                    <td>{item['Product Category']}</td>
-                    <td>{item['Tags']}</td>
-                    <td>{item['Quantity']}</td>
-                    <td>{item['Price per Unit']}</td>
-                    <td>{item['Discount Percentage']}</td>
-                    <td>{item['Total Amount']}</td>
-                    <td>{item['Final Amount']}</td>
-                    <td>{item['Payment Method']}</td>
-                    <td>{item['Order Status']}</td>
-                    <td>{item['Delivery Type']}</td>
-                    <td>{item['Store ID']}</td>
-                    <td>{item['Store Location']}</td>
-                    <td>{item['Salesperson ID']}</td>
-                    <td>{item['Employee Name']}</td>
+                data.map((item, i) => (
+                  <tr key={i}>
+                    <td>{item["Transaction ID"]}</td>
+                    <td>{item["Date"]}</td>
+                    <td>{item["Customer ID"]}</td>
+                    <td>{item["Customer Name"]}</td>
+                    <td>{item["Phone Number"]}</td>
+                    <td>{item["Gender"]}</td>
+                    <td>{item["Age"]}</td>
+                    <td>{item["Customer Region"]}</td>
+                    <td>{item["Customer Type"]}</td>
+                    <td>{item["Product ID"]}</td>
+                    <td>{item["Product Name"]}</td>
+                    <td>{item["Brand"]}</td>
+                    <td>{item["Product Category"]}</td>
+                    <td>{item["Tags"]}</td>
+                    <td>{item["Quantity"]}</td>
+                    <td>{item["Price per Unit"]}</td>
+                    <td>{item["Discount Percentage"]}</td>
+                    <td>{item["Total Amount"]}</td>
+                    <td>{item["Final Amount"]}</td>
+                    <td>{item["Payment Method"]}</td>
+                    <td>{item["Order Status"]}</td>
+                    <td>{item["Delivery Type"]}</td>
+                    <td>{item["Store ID"]}</td>
+                    <td>{item["Store Location"]}</td>
+                    <td>{item["Salesperson ID"]}</td>
+                    <td>{item["Employee Name"]}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="27" style={{ textAlign: 'center', padding: 20 }}>No records found</td>
+                  <td colSpan="27" style={{ textAlign: "center" }}>No records found</td>
                 </tr>
               )}
             </tbody>
@@ -308,10 +272,11 @@ function App() {
         </div>
       </div>
 
+      {/* PAGINATION */}
       <div className="pagination">
-        <button disabled={page === 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>Prev</button>
+        <button disabled={page === 1} onClick={() => setPage(page - 1)}>Prev</button>
         <span>Page {page} / {totalPages}</span>
-        <button disabled={page === totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>Next</button>
+        <button disabled={page === totalPages} onClick={() => setPage(page + 1)}>Next</button>
       </div>
     </div>
   );
