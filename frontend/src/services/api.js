@@ -1,20 +1,19 @@
-// Load API from environment (Render/Vercel)
+// frontend/src/services/api.js
+
+// ALWAYS load API URL from environment
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-console.log("🌐 API BASE URL from ENV:", API_BASE_URL);
+console.log("🌍 Loaded API BASE URL:", API_BASE_URL);
 
-// Fallback warning (only warns, does NOT use localhost)
-if (!API_BASE_URL) {
-  console.error("❌ ERROR: VITE_API_URL is missing! API calls will fail.");
+// Prevent localhost being used in production
+if (!API_BASE_URL || API_BASE_URL.includes("localhost")) {
+  console.warn("⚠️ WARNING: Invalid API URL. Backend will NOT be called.");
 }
 
-// ------------------------------
-// Fetch Sales with Filters
-// ------------------------------
+// Fetch sales data
 export const fetchSales = async ({ page = 1, limit = 50, filters = {} }) => {
   const params = new URLSearchParams({ page, limit });
 
-  // Attach filters if present
   Object.entries(filters).forEach(([key, value]) => {
     if (value !== undefined && value !== "") {
       params.append(key, value);
@@ -22,19 +21,14 @@ export const fetchSales = async ({ page = 1, limit = 50, filters = {} }) => {
   });
 
   const url = `${API_BASE_URL}/api/sales?${params.toString()}`;
-  console.log("📡 Request URL:", url);
+  console.log("📡 Fetching from:", url);
 
-  try {
-    const response = await fetch(url);
+  const response = await fetch(url);
 
-    if (!response.ok) {
-      console.error(`❌ API Error ${response.status}: ${response.statusText}`);
-      throw new Error("Failed to fetch sales data");
-    }
-
-    return await response.json();
-  } catch (err) {
-    console.error("🔥 Fetch Error:", err);
-    throw err;
+  if (!response.ok) {
+    console.error("❌ API fetch failed:", response.status, response.statusText);
+    throw new Error("Failed to fetch sales data");
   }
+
+  return response.json();
 };
