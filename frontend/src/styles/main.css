@@ -9,74 +9,96 @@ html, body {
   color: #111827;
 }
 
-/* Dashboard wrapper */
+/* Dashboard wrapper - make it slightly tighter vertically */
 .dashboard {
   width: 100%;
   box-sizing: border-box;
-  padding: 20px 18px;
+  padding: 12px 14px; /* moved everything a little up */
 }
 
-/* Header */
-h1 {
-  text-align: center;
-  margin: 0 0 16px 0;
-  font-size: 26px;   /* ↓ smaller */
-  font-weight: 700;
-}
-
-/* Search row */
-.search-row {
+/* Header row: title left, search right */
+.header-row {
   display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 14px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
 }
-.search-row input {
-  width: 360px; /* ↓ smaller width */
+
+/* Title aligned left */
+.brand-title {
+  margin: 0;
+  font-size: 22px;   /* smaller so fits top-left */
+  font-weight: 700;
+  color: #0f172a;
+  flex: 0 0 auto;
+}
+
+/* Search inline on top-right */
+.search-inline {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content:flex-end;
+}
+.search-inline input {
+  width: 420px;      /* adjust as needed */
+  max-width: 38vw;
   padding: 8px 10px;
-  border-radius: 6px;
+  border-radius: 8px;
   border: 1px solid #e6eefc;
   background: #fff;
-  font-size: 14px;  /* ↓ smaller */
-}
-.btn-primary,
-.reset-btn {
-  padding: 8px 12px; /* ↓ smaller */
   font-size: 14px;
-  border-radius: 6px;
+}
+.search-inline .btn-primary {
+  padding: 8px 12px;
+  font-size: 14px;
+  border-radius: 8px;
 }
 
-/* Filters */
+/* Filters (compact) */
 .filter-bar {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;       /* ↓ smaller spacing */
-  justify-content: center;
-  margin-bottom: 12px;
+  gap: 8px;
+  justify-content: flex-start;
+  margin: 8px 0 10px 0;
 }
-.filter-bar select,
-.filter-bar input {
-  padding: 6px 8px; /* ↓ smaller */
+.compact-filter select,
+.compact-filter input {
+  padding: 6px 8px;
   border-radius: 6px;
   border: 1px solid #e6eefc;
-  font-size: 13px;  /* ↓ smaller */
+  font-size: 13px;
 }
 
-/* DATE GROUP */
-.date-group { 
-  display:flex; 
-  gap:10px; 
-  align-items:center; 
-}
+/* Date group */
+.date-group { display:flex; gap:8px; align-items:center; }
+.compact-date input { padding:6px 8px; font-size:13px; }
 
-/* TABLE WRAPPER */
+/* KPI row */
+.kpi-row {
+  display:flex;
+  gap:12px;
+  margin: 6px 0 10px 0;
+  align-items: center;
+}
+.kpi-card {
+  background: transparent;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.kpi-title { font-size: 12px; color: #374151; }
+.kpi-value { font-weight: 700; font-size: 14px; margin-top: 2px; }
+
+/* Table wrapper */
 .table-outer {
   width: 100%;
-  padding: 4px;
   box-sizing: border-box;
+  padding: 4px;
 }
 
-/* TABLE CONTAINER */
+/* Table container */
 .table-container {
   width: 100%;
   overflow-x: auto;
@@ -85,53 +107,59 @@ h1 {
   border-radius: 6px;
   padding: 6px;
   box-shadow: 0 1px 2px rgba(14,30,50,0.06);
-  max-height: 600px;
+  max-height: 580px;  /* kept compact to bring it up */
 }
 
-/* ↓↓↓ THE IMPORTANT PART ↓↓↓ */
-/* SHRINK TABLE TO FIT ON ONE SCREEN */
+/* Table sizing and compact cells */
 .data-table {
   width: max-content;
-  min-width: 1050px;  /* ↓ drastically reduce from 1500px */
+  min-width: 1100px;  /* compact min width; tweak if columns overflow */
   border-collapse: collapse;
-  font-size: 12px;   /* ↓ smaller text */
+  font-size: 12px;
 }
 
-/* HEADER */
+/* Sticky header */
 .data-table thead th {
-  padding: 6px 8px;  /* ↓ smaller padding */
-  font-size: 12px;
-  background: #e8f0ff;
-  white-space: nowrap;
   position: sticky;
   top: 0;
+  background: #e8f0ff;
+  padding: 6px 8px;
+  font-weight: 600;
   z-index: 5;
+  text-align: left;
+  white-space: nowrap;
+  font-size: 12px;
 }
 
-/* BODY CELLS */
+/* Rows and cells */
 .data-table td {
-  padding: 6px 8px;  /* ↓ smaller */
+  padding: 6px 8px;
   white-space: nowrap;
   border-bottom: 1px solid #eef2f7;
   font-size: 12px;
 }
-
-/* Zebra */
-.data-table tbody tr:nth-child(even) { background: #fafcff; }
-.data-table tbody tr:hover { background: #f1f6ff; }
+.data-table tbody tr:nth-child(even) { background: #fbfdff; }
+.data-table tbody tr:hover { background: #f3f8ff; }
 
 /* Pagination */
 .pagination {
   display:flex;
   justify-content:center;
   gap:10px;
-  margin-top:12px;
+  margin-top:10px;
 }
 .pagination button {
   padding:6px 10px;
-  font-size: 13px;
   border-radius:6px;
   border: 1px solid #e6eefc;
   background:#fff;
   cursor:pointer;
+  font-size: 13px;
+}
+
+/* Responsive fallback: if screen very narrow, allow search to go below */
+@media (max-width: 900px) {
+  .header-row { flex-direction: column; align-items: stretch; gap: 8px; }
+  .search-inline { justify-content: stretch; }
+  .search-inline input { width: 100%; max-width: none; }
 }
