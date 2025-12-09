@@ -28,8 +28,8 @@ All functionality is fully server-driven for scalability.
 
 # 2. High-Level Architecture Diagram
 
-sql
-Copy code
+
+
                +--------------------+
                |   Frontend (Vite)  |
                | React Components   |
@@ -49,8 +49,8 @@ v
 | Streaming Data Output |
 +-----------------------+
 
-yaml
-Copy code
+
+
 
 ---
 
@@ -312,8 +312,7 @@ Vite builds into /dist
 
 API URL injected using:
 
-ini
-Copy code
+
 VITE_API_URL=https://truestate-4.onrender.com
 8. Performance Optimizations
 Backend
@@ -364,5 +363,4 @@ Frontend
 Backend
 🔗 https://truestate-4.onrender.com/
 
-yaml
-Copy code
+
